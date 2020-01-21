@@ -1,0 +1,19 @@
+{
+    "name": "jandelson/busca-arquivos",
+    "description": "Busca um ou mais arquivos em um diretorio",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jandelson Oliveira",
+            "email": "jandelson_oliveira@yahoo.com.br"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "AnalisaArquivos.php"
+        ]
+    },
+    "require": {
+        "twig/twig": "^2.12"
+    }
+}
