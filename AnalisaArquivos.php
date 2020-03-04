@@ -47,7 +47,8 @@ class AnalisaArquivos
         foreach (self::$listaArquivos as $key => $value) {
             if (!in_array($value, [".", ".."])) {
                 foreach (self::$listaArquivosEntrada as $key_ => $value_) {
-                    if ($value_ == $value) {
+                    $x = (soundex($value_) == soundex($value));
+                    if ($x) {
                         self::$arquivosEncontrados[] = $value;
                         self::$arquivosEncontradosDisplay[] = $value . '     Data: ' .
                             date(
