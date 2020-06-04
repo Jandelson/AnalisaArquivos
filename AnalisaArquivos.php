@@ -11,12 +11,20 @@ class AnalisaArquivos
     private static $arquivosEncontradosDisplay = [];
     private static $arquivosNaoEncontrados = [];
     private static $dir;
+    private static $arquivos;
     private static $separador;
 
     public static function listaArquivos($arquivos, $dir = '', $separador = "\n")
     {
         try {
+            if (!is_dir($dir)) {
+                return [
+                    'error' => 'Diretório não encontrado'
+                ];
+                exit;
+            }
             self::setDir($dir);
+            self::setArquivos($arquivos);
             self::setSeparador($separador);
             self::$listaArquivosEntrada = explode(self::$separador, $arquivos);
             self::encontrarArquivos();
@@ -29,6 +37,11 @@ class AnalisaArquivos
     private static function setDir($dir)
     {
         self::$dir = $dir;
+    }
+
+    private static function setArquivos($arquivos)
+    {
+        self::$arquivos = $arquivos;
     }
 
     private static function setSeparador($separador)
@@ -47,14 +60,17 @@ class AnalisaArquivos
         foreach (self::$listaArquivos as $key => $value) {
             if (!in_array($value, [".", ".."])) {
                 foreach (self::$listaArquivosEntrada as $key_ => $value_) {
-                    $x = (soundex($value_) == soundex($value));
-                    if ($x) {
+                    $x = (strrpos($value, $value_));
+                    if ($x !== false) {
                         self::$arquivosEncontrados[] = $value;
-                        self::$arquivosEncontradosDisplay[] = $value . '     Data: ' .
-                            date(
-                                "d/m/Y H:i:s",
-                                filemtime(self::$dir . '/' . $value)
-                            );
+                        self::$arquivosEncontradosDisplay[] = [
+                            'nome' => $value . '     Data: ' .
+                                date(
+                                    "d/m/Y H:i:s",
+                                    filemtime(self::$dir . '/' . $value)
+                                ),
+                            'link' => self::$dir . '/' . $value
+                        ];
                     }
                 }
             }
@@ -77,6 +93,8 @@ class AnalisaArquivos
         $TotalArquivosNaoEncontrados = count(self::$arquivosNaoEncontrados);
 
         return [
+            'dir' => self::$dir,
+            'arquivos' => self::$arquivos,
             'TotalArquivosEncontrados' => $TotalArquivosEncontrados,
             'TotalArquivosNaoEncontrados' => $TotalArquivosNaoEncontrados,
             'ArquivosNaoEncontrados' => self::$arquivosNaoEncontrados,
