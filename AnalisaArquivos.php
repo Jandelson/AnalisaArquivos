@@ -55,22 +55,32 @@ class AnalisaArquivos
 
     private static function encontrarArquivos(): void
     {
-        self::$listaArquivos = scandir(self::$dir);
-
-        foreach (self::$listaArquivos as $key => $value) {
-            if (!in_array($value, [".", ".."])) {
-                foreach (self::$listaArquivosEntrada as $key_ => $value_) {
-                    $x = (strrpos($value, $value_));
-                    if ($x !== false) {
-                        self::$arquivosEncontrados[] = $value;
-                        self::$arquivosEncontradosDisplay[] = [
-                            'nome' => $value . '     Data: ' .
-                                date(
-                                    "d/m/Y H:i:s",
-                                    filemtime(self::$dir . '/' . $value)
-                                ),
-                            'link' => self::$dir . '/' . $value
-                        ];
+        $diretorios = new \RecursiveDirectoryIterator(self::$dir);
+        $iterator = new \RecursiveIteratorIterator($diretorios);
+        $diretorios = [];
+        foreach ($iterator as $info) {
+            $diretorios[] = $info->getPath();
+        }
+        $diretorios = array_unique($diretorios);
+        foreach ($diretorios as $dir) {
+            self::$listaArquivos = scandir($dir);
+            foreach (self::$listaArquivos as $key => $value) {
+                if (!in_array($value, [".", ".."])) {
+                    foreach (self::$listaArquivosEntrada as $key_ => $value_) {
+                        $x = (strrpos($value, $value_));
+                        if ($x !== false) {
+                            self::$arquivosEncontrados[] = $value;
+                            self::$arquivosEncontradosDisplay[] = [
+                                'diretorio' => $dir,
+                                'nome' => $value,
+                                'data' =>
+                                    date(
+                                        "d/m/Y H:i:s",
+                                        filemtime($dir . '/' . $value)
+                                    ),
+                                'link' => $dir . '/' . $value
+                            ];
+                        }
                     }
                 }
             }
